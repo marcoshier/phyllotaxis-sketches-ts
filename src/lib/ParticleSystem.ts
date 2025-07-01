@@ -1,14 +1,17 @@
 import { Vector2 } from './Vector2';
 import { Particle } from './Particle';
 import { phyllotaxis } from './Phyllotaxis';
+import { drawBase, drawEdu, drawItasfw, drawPhco, drawSaarm } from './SymbolDrawers';
+
 
 export class ParticleSystem {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
-    private mouse: Vector2 = new Vector2(0, 0); // Initialize with default values
-    private particles: Particle[] = []; // Initialize as empty array
+    private mouse: Vector2 = new Vector2(0, 0);
     private animationId: number | null = null;
     private particleCount: number = 300;
+
+    particles: Particle[] = [];
 
     constructor(canvasId: string) {
         const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
@@ -31,6 +34,7 @@ export class ParticleSystem {
         this.setupCanvas();
         this.mouse = new Vector2(this.canvas.width / 2, this.canvas.height / 2);
         this.createParticles();
+    
     }
 
     private setupCanvas() {
@@ -39,18 +43,18 @@ export class ParticleSystem {
     }
 
     private createParticles() {
-        // Adjust particle count based on screen size
+        
         const area = this.canvas.width * this.canvas.height;
-        const baseArea = window.innerWidth * window.innerHeight; // Reference resolution
+        const baseArea = window.innerWidth * window.innerHeight;
         this.particleCount = Math.floor((area / baseArea) * 300);
-        this.particleCount = Math.max(100, Math.min(500, this.particleCount)); // Clamp between 100-500
+        this.particleCount = Math.max(100, Math.min(500, this.particleCount));
 
         const targets: Vector2[] = phyllotaxis(
             this.canvas.width, 
             this.canvas.height, 
             this.particleCount
         );
-        this.particles = targets.map((target: Vector2) => new Particle(target));
+        this.particles = targets.map((target: Vector2) => new Particle(target, new Vector2(this.canvas.width / 2, this.canvas.height / 2)));
     }
 
     private handleResize = () => {
@@ -59,7 +63,6 @@ export class ParticleSystem {
         
         this.setupCanvas();
         
-        // Scale existing particles to new screen size
         const scaleX = this.canvas.width / oldWidth;
         const scaleY = this.canvas.height / oldHeight;
         
@@ -70,12 +73,10 @@ export class ParticleSystem {
             particle.target.y *= scaleY;
         });
 
-        // Update mouse position proportionally
         this.mouse.x *= scaleX;
         this.mouse.y *= scaleY;
 
-        // Recreate particles if screen size changed significantly
-        const sizeChangeThreshold = 0.3; // 30% change
+        const sizeChangeThreshold = 0.3;
         if (Math.abs(scaleX - 1) > sizeChangeThreshold || Math.abs(scaleY - 1) > sizeChangeThreshold) {
             this.createParticles();
         }
@@ -87,7 +88,6 @@ export class ParticleSystem {
             this.mouse.y = e.clientY;
         });
 
-        // Add touch support for mobile
         this.canvas.addEventListener('touchmove', (e: TouchEvent) => {
             e.preventDefault();
             if (e.touches.length > 0) {
@@ -97,7 +97,6 @@ export class ParticleSystem {
             }
         });
 
-        // Debounced resize handler
         let resizeTimeout: number;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
@@ -116,40 +115,60 @@ export class ParticleSystem {
         }
     }
 
+    private fps = 60;
+    private msPerFrame = 1000 / this.fps;
+    private msPrev = window.performance.now()
 
-    private lastTime: number = 0; // Add this
+    private animate = () => {
 
-    private animate = (currentTime: number) => {
-
-        const deltaTime = this.lastTime === 0 ? 0 : (currentTime - this.lastTime) / 1000;
-        this.lastTime = currentTime;
-
-        if (deltaTime > 0.1) {
-            this.animationId = requestAnimationFrame(this.animate);
-            return;
-        }
-
-        // Clear with trail effect
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        this.ctx.fillStyle = 'rgba(250.0, 250.0, 250.0, 1.0)';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Update particles
-        this.particles.forEach((p: Particle) => p.update(this.mouse, this.particles, deltaTime));
+        this.particles.forEach((p: Particle) => p.update(this.mouse, this.particles));
 
-        // Draw particles
-        this.ctx.fillStyle = 'white';
         this.particles.forEach((p: Particle) => {
-            this.ctx.beginPath();
-            this.ctx.arc(p.position.x, p.position.y, 3, 0, Math.PI * 2);
-            this.ctx.fill();
+            switch(p.currentShape) {
+                case 'base':
+                    drawBase(this.ctx, p)
+                    break
+
+                case 'saarm':
+                    drawSaarm(this.ctx, p, this.animationId)
+                    break
+                
+                case 'itasfw':
+                    drawItasfw(this.ctx, p, this.animationId)
+                    break
+
+                case 'phco':
+                    drawPhco(this.ctx, p, this.animationId)
+                break
+
+                case 'edu':
+                    drawEdu(this.ctx, p, this.animationId)
+                break
+
+                default:
+                    drawBase(this.ctx, p)
+                
+            }
         });
 
-        // Draw mouse
         this.ctx.fillStyle = 'red';
         this.ctx.beginPath();
         this.ctx.arc(this.mouse.x, this.mouse.y, 8, 0, Math.PI * 2);
         this.ctx.fill();
 
-        this.animationId = requestAnimationFrame(this.animate);
+        let newAnimationId = requestAnimationFrame(this.animate);
+
+        const msNow = window.performance.now()
+        const msPassed = msNow - this.msPrev
+        
+        if (msPassed < this.msPerFrame) return
+      
+        const excessTime = msPassed % this.msPerFrame
+        this.msPrev = msNow - excessTime
+
+        this.animationId = newAnimationId
     }
 }

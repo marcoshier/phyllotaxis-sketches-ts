@@ -31,4 +31,22 @@ export class Vector2 {
     distance(v: Vector2): number { 
         return this.sub(v).length(); 
     }
+
+    copy(): Vector2 {
+        return new Vector2(this.x, this.y);
+    }
+
+    perpCCW(): Vector2 {
+        return new Vector2(-this.y, this.x);
+    }
+    
+    perpCW(): Vector2 {
+        return new Vector2(this.y, -this.x);
+    }
+
+    scale(origin: Vector2, amount: number): Vector2 {
+        const translated = this.sub(origin);
+        const scaled = translated.mul(amount);
+        return scaled.add(origin);
+    }
 }
