@@ -1,6 +1,6 @@
 import './style.css';
 import { ParticleSystem } from './lib/ParticleSystem';
-import { fadeIn, transitionTo } from './lib/Transition';
+import { transitionTo } from './lib/Transition';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `

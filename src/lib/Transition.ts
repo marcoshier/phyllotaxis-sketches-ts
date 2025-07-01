@@ -1,6 +1,5 @@
 import { animate } from "motion"
 import { particleSystem } from "../main"
-import type { Particle } from "./Particle";
 import { simplex2 } from "./Simplex";
 
 export let transitionType: string = 'concentric in 5';
@@ -33,7 +32,7 @@ export function transitionTo(next: string) {
     transitionType = transitionTypes[Math.floor(Math.random()*transitionTypes.length)]
 
     particleSystem.particles.forEach((particle, index) => {
-        const delay = computeDelay(particle, index);
+        const delay = computeDelay(index);
         
         animate(
             particle.scaleMultiplier,
@@ -69,7 +68,7 @@ export function fadeIn() {
     transitionType = transitionTypes[Math.floor(Math.random()*transitionTypes.length)]
 
     particleSystem.particles.forEach((particle, index) => {
-        const delay = computeDelay(particle, index);
+        const delay = computeDelay(index);
         
         animate(
             particle.scaleMultiplier,
@@ -85,7 +84,7 @@ export function fadeIn() {
     });
 }
 
-function computeDelay(p: Particle, i: number): number {
+function computeDelay(i: number): number {
     const count = particleSystem.particles.length;
 
     switch (transitionType) {
