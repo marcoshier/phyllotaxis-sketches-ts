@@ -1,18 +1,18 @@
 import { Vector2 } from "./Vector2";
 
-/** Strategic Asset Allocation and Risk Management, blue triangle */
-export function base(ctx: CanvasRenderingContext2D, center: Vector2, size: number = 10) {
-    ctx.fillStyle = 'fuchsia';
+/** Base () */
+export function base(ctx: CanvasRenderingContext2D, center: Vector2, size: number = 10, color: string = '#EF2B7C') {
+    ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(center.x, center.y, size, 0, Math.PI * 2);
     ctx.fill();
 }
 
-/** Strategic Asset Allocation and Risk Management, blue triangle */
-export function saarm(ctx: CanvasRenderingContext2D, center: Vector2, size: number = 30, rotation: number = 0) {
+/** Strategic Asset Allocation and Risk Management */
+export function saarm(ctx: CanvasRenderingContext2D, center: Vector2, size: number = 30, rotation: number = 0, color: string = '#3b82f6') {
     const height = (size * Math.sqrt(3)) / 2;
     
-    ctx.fillStyle = '#3b82f6';
+    ctx.fillStyle = color;
     ctx.save();
     ctx.translate(center.x, center.y);
     ctx.rotate(rotation);
@@ -28,9 +28,9 @@ export function saarm(ctx: CanvasRenderingContext2D, center: Vector2, size: numb
     ctx.restore();
 }
 
-/** IT Accounting Solution for the Family Wealth, pink line */
-export function itasfw(ctx: CanvasRenderingContext2D, center: Vector2, size: number = 30, rotation: number = 0) {
-    ctx.fillStyle = '#ec4899';
+/** IT Accounting Solution for the Family Wealth */
+export function itasfw(ctx: CanvasRenderingContext2D, center: Vector2, size: number = 30, rotation: number = 0, color: string = '#ec4899') {
+    ctx.fillStyle = color;
     
     ctx.save();
     ctx.translate(center.x, center.y);
@@ -39,8 +39,8 @@ export function itasfw(ctx: CanvasRenderingContext2D, center: Vector2, size: num
     ctx.restore();
 }
 
-/** Philanthropic consultancy, rounded lilac triangle */
-export function phco(ctx: CanvasRenderingContext2D, center: Vector2, size: number = 20, rotation: number = 0) {
+/** Philanthropic consultancy */
+export function phco(ctx: CanvasRenderingContext2D, center: Vector2, size: number = 20, rotation: number = 0, color: string = '#a855f7') {
     const height = (size * Math.sqrt(3)) / 2;
     const radius = 4.0;
 
@@ -52,8 +52,8 @@ export function phco(ctx: CanvasRenderingContext2D, center: Vector2, size: numbe
     const bottomLeft = { x: -size/2, y: height * 1/3 };
     const bottomRight = { x: size/2, y: height * 1/3 };
     
-    ctx.fillStyle = '#a855f7';
-    ctx.strokeStyle = '#a855f7';
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
     ctx.lineJoin = "round";
     ctx.lineWidth = radius * 2;
     
@@ -72,11 +72,11 @@ export function phco(ctx: CanvasRenderingContext2D, center: Vector2, size: numbe
 
 }
 
-/** Education, blue square */
-export function edu(ctx: CanvasRenderingContext2D, center: Vector2, size: number = 30, rotation: number) {
+/** Education */
+export function edu(ctx: CanvasRenderingContext2D, center: Vector2, size: number = 30, rotation: number, color: string = '#3b82f6') {
     const half = size / 2;
     
-    ctx.fillStyle = '#3b82f6';
+    ctx.fillStyle = color;
 
     ctx.save();
     ctx.translate(center.x, center.y);

@@ -1,3 +1,5 @@
+import { particleSystem } from '../main';
+import { mix } from './Colors';
 import { Vector2 } from './Vector2';
 
 export class Particle {
@@ -12,6 +14,9 @@ export class Particle {
     scaleMultiplier: number;
     currentShape: string;
 
+    ogcolor: string = "#ffffff";
+    color: string = "#ffffff";
+
     constructor(target: Vector2, screenCenter: Vector2) {
         this.target = target;
         this.position =  new Vector2((Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50).add(target.copy().scale(screenCenter, 1.0 + Math.random() * 0.1));
@@ -21,7 +26,7 @@ export class Particle {
         this.damping = 0.9;
         this.screenCenter = screenCenter;
         this.rotation = 0;
-        this.scaleMultiplier = 1;
+        this.scaleMultiplier = 0;
         this.currentShape = 'base';
     }
 
@@ -42,6 +47,12 @@ export class Particle {
                 this.rotation += 0.25;
             }
             this.velocity = this.velocity.add(away.mul(0.5));
+        }
+
+        if(particleSystem.halo) {
+            this.color = mix( "#ffffff", this.ogcolor, Math.max(0.4, Math.min(mouseDistance / 700.0, 1.0)) * 1.5);
+        } else {
+            this.color = this.ogcolor;
         }
 
         for (const other of particles) {

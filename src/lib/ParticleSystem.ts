@@ -2,6 +2,7 @@ import { Vector2 } from './Vector2';
 import { Particle } from './Particle';
 import { phyllotaxis } from './Phyllotaxis';
 import { drawBase, drawEdu, drawItasfw, drawPhco, drawSaarm } from './SymbolDrawers';
+import { fadeIn } from './Transition';
 
 
 export class ParticleSystem {
@@ -10,6 +11,9 @@ export class ParticleSystem {
     private mouse: Vector2 = new Vector2(0, 0);
     private animationId: number | null = null;
     private particleCount: number = 300;
+
+    interactive = true;
+    halo = true;
 
     particles: Particle[] = [];
 
@@ -30,11 +34,18 @@ export class ParticleSystem {
         this.setupEventListeners();
     }
 
+    toggleInteractive() {
+        this.interactive = !this.interactive;
+    }
+
+    toggleHalo() {
+        this.halo = !this.halo;
+    }
+
     private initialize() {
         this.setupCanvas();
         this.mouse = new Vector2(this.canvas.width / 2, this.canvas.height / 2);
         this.createParticles();
-    
     }
 
     private setupCanvas() {
@@ -105,6 +116,7 @@ export class ParticleSystem {
     }
 
     start() {
+        fadeIn();
         this.animate();
     }
 
@@ -121,10 +133,15 @@ export class ParticleSystem {
 
     private animate = () => {
 
-        this.ctx.fillStyle = 'rgba(250.0, 250.0, 250.0, 1.0)';
+        this.ctx.fillStyle = '#060b2a';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.particles.forEach((p: Particle) => p.update(this.mouse, this.particles));
+         
+        if (this.interactive) {
+            this.particles.forEach((p: Particle) => p.update(this.mouse, this.particles));
+        } else {
+            this.particles.forEach((p: Particle) => p.update(new Vector2(-9999, -9999), this.particles));
+        }
 
         this.particles.forEach((p: Particle) => {
             switch(p.currentShape) {
@@ -154,10 +171,10 @@ export class ParticleSystem {
             }
         });
 
-        this.ctx.fillStyle = 'red';
-        this.ctx.beginPath();
-        this.ctx.arc(this.mouse.x, this.mouse.y, 8, 0, Math.PI * 2);
-        this.ctx.fill();
+        // this.ctx.fillStyle = 'red';
+        // this.ctx.beginPath();
+        // this.ctx.arc(this.mouse.x, this.mouse.y, 8, 0, Math.PI * 2);
+        // this.ctx.fill();
 
         let newAnimationId = requestAnimationFrame(this.animate);
 
