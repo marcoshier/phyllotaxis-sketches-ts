@@ -132,11 +132,20 @@ export class ParticleSystem {
     private msPrev = window.performance.now()
 
     private animate = () => {
+        const msNow = window.performance.now()
+        const msPassed = msNow - this.msPrev
+        
+        if (msPassed < this.msPerFrame) {
+            this.animationId = requestAnimationFrame(this.animate);
+            return;
+        }
+
+        const excessTime = msPassed % this.msPerFrame
+        this.msPrev = msNow - excessTime
 
         this.ctx.fillStyle = '#060b2a';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-         
         if (this.interactive) {
             this.particles.forEach((p: Particle) => p.update(this.mouse, this.particles));
         } else {
@@ -148,44 +157,23 @@ export class ParticleSystem {
                 case 'base':
                     drawBase(this.ctx, p)
                     break
-
                 case 'saarm':
-                    drawSaarm(this.ctx, p, this.animationId)
+                    drawSaarm(this.ctx, p, msNow / 1000.0)
                     break
-                
                 case 'itasfw':
-                    drawItasfw(this.ctx, p, this.animationId)
+                    drawItasfw(this.ctx, p, msNow / 1000.0)
                     break
-
                 case 'phco':
-                    drawPhco(this.ctx, p, this.animationId)
-                break
-
+                    drawPhco(this.ctx, p, msNow / 1000.0)
+                    break
                 case 'edu':
-                    drawEdu(this.ctx, p, this.animationId)
-                break
-
+                    drawEdu(this.ctx, p, msNow / 1000.0)
+                    break
                 default:
                     drawBase(this.ctx, p)
-                
             }
         });
 
-        // this.ctx.fillStyle = 'red';
-        // this.ctx.beginPath();
-        // this.ctx.arc(this.mouse.x, this.mouse.y, 8, 0, Math.PI * 2);
-        // this.ctx.fill();
-
-        let newAnimationId = requestAnimationFrame(this.animate);
-
-        const msNow = window.performance.now()
-        const msPassed = msNow - this.msPrev
-        
-        if (msPassed < this.msPerFrame) return
-      
-        const excessTime = msPassed % this.msPerFrame
-        this.msPrev = msNow - excessTime
-
-        this.animationId = newAnimationId
+        this.animationId = requestAnimationFrame(this.animate);
     }
 }
