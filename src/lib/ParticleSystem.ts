@@ -17,6 +17,8 @@ export class ParticleSystem {
 
     particles: Particle[] = [];
 
+    particleRadius = 1.0;
+
     constructor(canvasId: string) {
         const canvas = document.getElementById(canvasId) as HTMLCanvasElement;
         if (!canvas) {
@@ -46,6 +48,7 @@ export class ParticleSystem {
         this.setupCanvas();
         this.mouse = new Vector2(this.canvas.width / 2, this.canvas.height / 2);
         this.createParticles();
+        this.particleRadius = Math.min(this.canvas.width, this.canvas.height) * 0.011
     }
 
     private setupCanvas() {

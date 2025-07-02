@@ -29,8 +29,12 @@ export class Particle {
         this.scaleMultiplier = 0;
         this.currentShape = 'base';
     }
+    
+    areaScale = Math.min(1.0, Math.sqrt((window.innerWidth, window.innerHeight) / (1920 * 1080)));
+
 
     update(mouse: Vector2, particles: Particle[]): void {
+        console.log(mouse)
         const toTarget: Vector2 = this.target.sub(this.position);
         const distance: number = toTarget.length();
         
@@ -40,7 +44,9 @@ export class Particle {
         }
 
         const mouseDistance: number = this.position.distance(mouse);
-        if (mouseDistance < this.screenCenter.x / 2) {
+        if (mouse.x > 0 && mouse.y < window.innerWidth
+            && mouse.y > 0 && mouse.y < window.innerHeight
+            && mouseDistance < this.screenCenter.x / 2) {
             const distFactor = Math.pow((mouseDistance / 1000), 10);
             const away: Vector2 = this.position.sub(mouse).mul(distFactor).normalize();
             if (mouseDistance < 50) {
@@ -60,7 +66,7 @@ export class Particle {
             const dist: number = this.position.distance(other.position);
             if (dist < 25 && dist > 0) {
                 const away: Vector2 = this.position.sub(other.position).normalize();
-                this.velocity = this.velocity.add(away.mul(0.3));
+                this.velocity = this.velocity.add(away.mul(0.3 * this.areaScale * this.areaScale));
             }
         }
 
